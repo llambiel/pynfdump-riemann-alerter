@@ -1,0 +1,15 @@
+profile: 'live'
+netflowpath: '/var/netflow'
+sources:
+  - 'mysource1'
+  - 'mysource2'
+queries:
+  "test query1":
+    query: 'dst port 25'  
+    order: 'flows'
+    stats: 'ip'
+  spam2:
+    query: 'dst port 26'
+    order: 'bps'
+    stats: 'port'
+  
