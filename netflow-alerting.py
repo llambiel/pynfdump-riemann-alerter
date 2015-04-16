@@ -124,7 +124,7 @@ def nfquery():
         nforderby = v["order"]
         stats = v["stats"]
         state = v["state"]
-        if "threshold" in v["threshold"]:
+        if "threshold" in v:
             threshold = int(v["threshold"])
         if "ipwhitelist" in v:
             ipwhitelist = v["ipwhitelist"]
