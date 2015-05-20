@@ -128,6 +128,8 @@ def nfquery():
             threshold = int(v["threshold"])
         if "ipwhitelist" in v:
             ipwhitelist = v["ipwhitelist"]
+        else:
+            ipwhitelist = None
 
         logging.info('Performing query %s %s %s', nfquery, stats, nforderby)
 
@@ -143,7 +145,7 @@ def nfquery():
                         country_code = gi.country_code_by_addr(item)
                         whois = "Whois: http://whois.domaintools.com/%s" % (item)
                         # Check if IP is whitelisted
-                        if ipwhitelist:
+                        if ipwhitelist is not None:
                             ipwhitelistmatch = all_matching_cidrs(item, ipwhitelist)
                             if ipwhitelistmatch:
                                 logging.info('IP %s is whitelisted (%s)', item, ipwhitelistmatch)
