@@ -78,13 +78,13 @@ def sendalert(riemannhost, txt, service, state):
     logging.info('%s', txt)
 
 
-def sendclear(riemannhost, service, state):
+def sendclear(riemannhost, service):
 
     client = bernhard.Client(host=riemannhost)
     host = socket.gethostname()
 
     client.send({'host': host,
-                 'service': state,
+                 'service': service,
                  'state': 'ok',
                  'tags': ['netflow-nfdump-alerting'],
                  'ttl': 3700,
@@ -168,7 +168,7 @@ def nfquery():
     for k, v in s.iteritems():
         if v != starttime:
             del s[k]
-            sendclear(riemannhost, service, k)
+            sendclear(riemannhost, k)
     s.close()
 
     logging.info('Script completed')
