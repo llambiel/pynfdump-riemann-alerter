@@ -103,9 +103,16 @@ def nfquery():
 
     profile = data["profile"]
     netflowpath = data["netflowpath"]
-    sources = data["sources"]
     queries = data["queries"]
     riemannhost = data["riemannhost"]
+    sources = data["sources"]
+
+    # merge sources if alternative sources present. Required for puppet static & dynamic
+    try:
+        sources2 = data["sources2"]
+        sources = sources + sources2
+    except KeyError:
+        pass
 
     # start time is -5 minutes rounded to the the previous 5 minutes
     now = datetime.datetime.now()
