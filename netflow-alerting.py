@@ -48,6 +48,12 @@ except ImportError:
     Client = None
     pass
 
+try:
+    from configparser import ConfigParser
+except ImportError:  # python 2
+    from ConfigParser import ConfigParser
+
+
 logfile = "/var/log/netflow-alerting.log"
 logging.basicConfig(format='%(asctime)s %(pathname)s %(levelname)s:%(message)s', level=logging.DEBUG, filename=logfile)
 logging.getLogger().addHandler(logging.StreamHandler())
@@ -62,9 +68,17 @@ def main():
     return args
 
 
-def sendalert(riemannhost, txt, service, state):
+def sendalert(txt, service, state):
 
-    client = bernhard.Client(host=riemannhost)
+    conf = ConfigParser()
+    conf.read(("/etc/bernhard.conf",))
+
+    client = bernhard.SSLClient(host=conf.get('default', 'riemann_server'),
+                                port=int(conf.get('default', 'riemann_port')),
+                                keyfile=conf.get('default', 'tls_cert_key'),
+                                certfile=conf.get('default', 'tls_cert'),
+                                ca_certs=conf.get('default', 'tls_ca_cert'))
+
     host = socket.gethostname()
 
     client.send({'host': host,
@@ -78,9 +92,17 @@ def sendalert(riemannhost, txt, service, state):
     logging.info('%s', txt)
 
 
-def sendclear(riemannhost, service):
+def sendclear(service):
 
-    client = bernhard.Client(host=riemannhost)
+    conf = ConfigParser()
+    conf.read(("/etc/bernhard.conf",))
+
+    client = bernhard.SSLClient(host=conf.get('default', 'riemann_server'),
+                                port=int(conf.get('default', 'riemann_port')),
+                                keyfile=conf.get('default', 'tls_cert_key'),
+                                certfile=conf.get('default', 'tls_cert'),
+                                ca_certs=conf.get('default', 'tls_ca_cert'))
+
     host = socket.gethostname()
 
     client.send({'host': host,
@@ -104,7 +126,6 @@ def nfquery():
     profile = data["profile"]
     netflowpath = data["netflowpath"]
     queries = data["queries"]
-    riemannhost = data["riemannhost"]
     sources = data["sources"]
 
     # merge sources if alternative sources present. Required for puppet static & dynamic
@@ -160,7 +181,7 @@ def nfquery():
 
                     txt = "Alert '%s' triggered matching query '%s' with %s %s for %s %s (%s) at time '%s'. Threshold is %s. %s" % (k, nfquery, nb, nforderby, stats, item, country_code, starttime, threshold, whois)
                     service = "netflow-alerting-%s-%s" % (stats, item)
-                    sendalert(riemannhost, txt, service, state)
+                    sendalert(txt, service, state)
 
                     logging.info('%s', txt)
 
@@ -175,7 +196,7 @@ def nfquery():
     for k, v in s.iteritems():
         if v != starttime:
             del s[k]
-            sendclear(riemannhost, k)
+            sendclear(k)
     s.close()
 
     logging.info('Script completed')
