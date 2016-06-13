@@ -15,36 +15,36 @@ from datetime import timedelta
 try:
     import yaml
 except ImportError:
-    print "It looks like yaml module isn't installed. Please install it using pip install pyyaml"
+    print ("It looks like yaml module isn't installed. Please install it using pip install pyyaml")
     sys.exit(1)
 
 try:
     from netaddr import all_matching_cidrs
 except ImportError:
-    print "It looks like netaddr module isn't installed. Please install it using pip install netaddr"
+    print ("It looks like netaddr module isn't installed. Please install it using pip install netaddr")
     sys.exit(1)
 
 try:
     import pynfdump
 except ImportError:
-    print "It looks like pynfdump  module isn't installed. Please install it using pip install pynfdump"
+    print ("It looks like pynfdump  module isn't installed. Please install it using pip install pynfdump")
     sys.exit(1)
 
 try:
     import bernhard
 except ImportError:
-    print "It looks like riemann client (bernard) isn't installed. Please install it using pip install bernhard"
+    print ("It looks like riemann client (bernard) isn't installed. Please install it using pip install bernhard")
     sys.exit(1)
 try:
     import GeoIP
 except ImportError:
-    print "It looks like GeoIP module isn't installed. Please install it using pip install geoip"
+    print ("It looks like GeoIP module isn't installed. Please install it using pip install geoip")
     pass
 
 try:
     from raven import Client
 except ImportError:
-    print "It looks like raven (sentry) module isn't installed. Please install it using pip install raven"
+    print ("It looks like raven (sentry) module isn't installed. Please install it using pip install raven")
     Client = None
     pass
 
