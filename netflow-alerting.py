@@ -63,6 +63,7 @@ def main():
     parser = argparse.ArgumentParser(description='This program perform netflow nfdump queries and alert using riemann for any matched query and threshold. All configuration is done using a yaml configuration file netflow-alerting.yaml')
     parser.add_argument('-version', action='version', version='%(prog)s 0.3, Loic Lambiel exoscale')
     if Client is not None:
+        parser.add_argument('-capfile', help='Path to the cap file', required=True, type=str, dest='filepath')
         parser.add_argument('-sentryapikey', help='Sentry API key', required=False, type=str, dest='sentryapikey')
     args = vars(parser.parse_args())
     return args
@@ -117,23 +118,15 @@ def nfquery():
 
     logging.info('Script started')
 
+    filepath = args['filepath']
+
     f = open('/etc/netflow-alerting.yaml')
     data = yaml.load(f)
     f.close()
 
     s = shelve.open('/tmp/netflow-alerting.db')
 
-    profile = data["profile"]
-    netflowpath = data["netflowpath"]
     queries = data["queries"]
-    sources = data["sources"]
-
-    # merge sources if alternative sources present. Required for puppet static & dynamic
-    try:
-        sources2 = data["sources2"]
-        sources = sources + sources2
-    except KeyError:
-        pass
 
     # start time is -5 minutes rounded to the the previous 5 minutes
     now = datetime.datetime.now()
@@ -145,8 +138,6 @@ def nfquery():
     if GeoIP is not None:
         GEOIP_DB_PATH = data["geoip_db_path"]
         gi = GeoIP.open(GEOIP_DB_PATH, GeoIP.GEOIP_STANDARD)
-    d = pynfdump.Dumper(netflowpath, profile=profile, sources=sources)
-    d.set_where(start=starttime)
     for k, v in queries.items():
         nfquery = v["query"]
         nforderby = v["order"]
@@ -161,7 +152,7 @@ def nfquery():
 
         logging.info('Performing query %s %s %s', nfquery, stats, nforderby)
 
-        search = d.search(nfquery, statistics=stats, statistics_order=nforderby, limit=500)
+        search = pynfdump.search_file(filepath, query=nfquery, statistics=stats, statistics_order=nforderby, limit=500)
 
         for r in search:
             if threshold:
@@ -179,7 +170,7 @@ def nfquery():
                                 logging.info('IP %s is whitelisted (%s)', item, ipwhitelistmatch)
                                 continue
 
-                    txt = "Alert '%s' triggered matching query '%s' with %s %s for %s %s (%s) at time '%s'. Threshold is %s. %s" % (k, nfquery, nb, nforderby, stats, item, country_code, starttime, threshold, whois)
+                    txt = "Alert '%s' triggered matching query '%s' with %s %s for %s %s (%s) at time '%s'. Threshold is %s. %s" % (k, nfquery, nb, nforderby, stats, item, country_code, starttime, threshold, filepath, whois)
                     service = "netflow-alerting-%s-%s" % (stats, item)
                     sendalert(txt, service, state)
 
