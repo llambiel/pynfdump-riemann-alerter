@@ -150,7 +150,7 @@ def nfquery():
         else:
             ipwhitelist = None
 
-        logging.info('Performing query %s %s %s', nfquery, stats, nforderby)
+        logging.info('Performing query %s %s %s %s', nfquery, stats, nforderby, filepath)
 
         search = pynfdump.search_file(filepath, query=nfquery, statistics=stats, statistics_order=nforderby, limit=500)
 
