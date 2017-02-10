@@ -133,7 +133,7 @@ def nfquery():
     starttime = rounded.strftime('%Y-%m-%d %H:%M')
 
     filename = "nfcapd." + rounded.strftime('%Y%m%d%H%M')
-    filepath = rootpath + now.strftime('%Y/%m/%d/') + filename
+    filepath = rootpath + rounded.strftime('%Y/%m/%d/') + filename
 
     if GeoIP is not None:
         GEOIP_DB_PATH = data["geoip_db_path"]
