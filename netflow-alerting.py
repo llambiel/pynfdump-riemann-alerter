@@ -63,7 +63,6 @@ def main():
     parser = argparse.ArgumentParser(description='This program perform netflow nfdump queries and alert using riemann for any matched query and threshold. All configuration is done using a yaml configuration file netflow-alerting.yaml')
     parser.add_argument('-version', action='version', version='%(prog)s 0.3, Loic Lambiel exoscale')
     if Client is not None:
-        parser.add_argument('-capfile', help='Path to the cap file', required=True, type=str, dest='filepath')
         parser.add_argument('-sentryapikey', help='Sentry API key', required=False, type=str, dest='sentryapikey')
     args = vars(parser.parse_args())
     return args
@@ -118,14 +117,12 @@ def nfquery():
 
     logging.info('Script started')
 
-    filepath = args['filepath']
-
     f = open('/etc/netflow-alerting.yaml')
     data = yaml.load(f)
     f.close()
 
     s = shelve.open('/tmp/netflow-alerting.db')
-
+    rootpath = data["netflowpath"]
     queries = data["queries"]
 
     # start time is -5 minutes rounded to the the previous 5 minutes
@@ -134,6 +131,9 @@ def nfquery():
                               seconds=now.second,
                               microseconds=now.microsecond)
     starttime = rounded.strftime('%Y-%m-%d %H:%M')
+
+    filename = "nfcapd." + rounded.strftime('%Y%m%d%H%M')
+    filepath = rootpath + now.strftime('%Y/%m/%d/') + filename
 
     if GeoIP is not None:
         GEOIP_DB_PATH = data["geoip_db_path"]
