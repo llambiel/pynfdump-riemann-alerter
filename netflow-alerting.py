@@ -170,7 +170,7 @@ def nfquery():
                                 logging.info('IP %s is whitelisted (%s)', item, ipwhitelistmatch)
                                 continue
 
-                    txt = "Alert '%s' triggered matching query '%s' with %s %s for %s %s (%s) at time '%s'. Threshold is %s. %s" % (k, nfquery, nb, nforderby, stats, item, country_code, starttime, threshold, filepath, whois)
+                    txt = "Alert '%s' triggered matching query '%s' with %s %s for %s %s (%s) at time '%s'. Threshold is %s. %s %s" % (k, nfquery, nb, nforderby, stats, item, country_code, starttime, threshold, filepath, whois)
                     service = "netflow-alerting-%s-%s" % (stats, item)
                     sendalert(txt, service, state)
 
