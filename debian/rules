@@ -1,0 +1,18 @@
+#!/usr/bin/make -f
+
+VERSION = 0.$(shell date +%F)
+PACKAGEVERSION = $(VERSION)-0~$(DISTRIBUTION)0
+
+%:
+	dh $@
+
+override_dh_auto_clean:
+override_dh_auto_test:
+override_dh_auto_build:
+override_dh_auto_install:
+	mkdir -p debian/pynfdump-riemann-alerter/usr/bin/
+	cp netflow-alerting.py debian/pynfdump-riemann-alerter/usr/bin/netflow-alerting
+	chmod +x debian/pynfdump-riemann-alerter/usr/bin/netflow-alerting
+
+override_dh_gencontrol:
+	dh_gencontrol -- -v$(PACKAGEVERSION)
