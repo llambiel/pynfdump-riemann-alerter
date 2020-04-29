@@ -1,6 +1,7 @@
 #!/usr/bin/make -f
 
 VERSION = 0.$(shell date +%F)
+DISTRIBUTION = $(shell lsb_release -sc)
 PACKAGEVERSION = $(VERSION)-0~$(DISTRIBUTION)0
 
 %:
