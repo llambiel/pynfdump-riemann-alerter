@@ -1,6 +1,6 @@
 Source: pynfdump-riemann-alerter
 Maintainer: Vincent Bernat <bernat@debian.org>
-Build-Depends: debhelper (>= 9)
+Build-Depends: debhelper (>= 9), lsb-release
 
 Package: pynfdump-riemann-alerter
 Architecture: all
